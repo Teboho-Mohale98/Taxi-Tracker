@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Tracker Pro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="taxi-icon">🚕</div>
+            <h1>Taxi Tracker Pro</h1>
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="main-app" style="display: none;">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>🚕 Taxi Tracker Pro</h1>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Screen -->
+            <div id="dashboard-screen" class="screen active">
+                <div class="screen-header">
+                    <h2>Dashboard</h2>
+                    <button class="refresh-btn" onclick="refreshDashboard()">🔄 Refresh</button>
+                </div>
+
+                <!-- Weekly Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card stat-card">
+                        <div class="stat-label">Active Drivers</div>
+                        <div class="stat-value" id="active-drivers-count">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-label">Service Due</div>
+                        <div class="stat-value warning" id="service-due-count">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-label">Total Earnings</div>
+                        <div class="stat-value success" id="total-earnings">R 0.00</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-label">Fuel Costs</div>
+                        <div class="stat-value" id="total-fuel">R 0.00</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-label">Maintenance</div>
+                        <div class="stat-value" id="total-maintenance">R 0.00</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-label">Net Profit</div>
+                        <div class="stat-value" id="net-profit">R 0.00</div>
+                    </div>
+                </div>
+
+                <!-- Weekly Chart -->
+                <div class="card chart-card">
+                    <h3>Weekly Performance</h3>
+                    <canvas id="weekly-chart"></canvas>
+                </div>
+
+                <!-- Service Reminders -->
+                <div class="card" id="service-reminders-card" style="display: none;">
+                    <h3>⚠️ Service Reminders</h3>
+                    <div id="service-reminders-list"></div>
+                </div>
+            </div>
+
+            <!-- Drivers Screen -->
+            <div id="drivers-screen" class="screen">
+                <div class="screen-header">
+                    <h2>Drivers</h2>
+                    <button class="fab" onclick="showAddDriverDialog()">+ Add Driver</button>
+                </div>
+                <div id="drivers-list" class="drivers-list"></div>
+            </div>
+
+            <!-- Daily Entries Screen -->
+            <div id="daily-entries-screen" class="screen">
+                <div class="screen-header">
+                    <h2>Daily Entries</h2>
+                </div>
+
+                <!-- Entry Form -->
+                <div class="card form-card">
+                    <h3>Add Daily Entry</h3>
+                    <form id="daily-entry-form" onsubmit="addDailyEntry(event)">
+                        <div class="form-group">
+                            <label>Driver</label>
+                            <select id="entry-driver" required>
+                                <option value="">Select Driver</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="entry-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Brought In (R)</label>
+                            <input type="number" step="0.01" id="entry-cash-brought" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Made (R)</label>
+                            <input type="number" step="0.01" id="entry-amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fuel Cost (R)</label>
+                            <input type="number" step="0.01" id="entry-fuel-cost" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fuel Type</label>
+                            <select id="entry-fuel-type" required>
+                                <option value="petrol">Petrol</option>
+                                <option value="diesel">Diesel</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes (Optional)</label>
+                            <textarea id="entry-notes" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Net Profit</label>
+                            <input type="text" id="entry-net-profit" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Entry</button>
+                    </form>
+                </div>
+
+                <!-- Recent Entries -->
+                <div class="card">
+                    <h3>Recent Entries</h3>
+                    <div id="recent-entries-list"></div>
+                </div>
+            </div>
+
+            <!-- Maintenance Screen -->
+            <div id="maintenance-screen" class="screen">
+                <div class="screen-header">
+                    <h2>Maintenance</h2>
+                    <button class="fab" onclick="showAddMaintenanceDialog()">+ Add Maintenance</button>
+                </div>
+                <div id="maintenance-list"></div>
+            </div>
+
+            <!-- Reports Screen -->
+            <div id="reports-screen" class="screen">
+                <div class="screen-header">
+                    <h2>Weekly Reports</h2>
+                </div>
+
+                <!-- Week Selector -->
+                <div class="card week-selector">
+                    <button onclick="previousWeek()">◀ Previous</button>
+                    <span id="current-week-range"></span>
+                    <button onclick="nextWeek()">Next ▶</button>
+                    <button onclick="currentWeek()">Current Week</button>
+                </div>
+
+                <!-- Weekly Summary -->
+                <div class="card">
+                    <h3>Weekly Summary</h3>
+                    <div id="weekly-summary"></div>
+                </div>
+
+                <!-- Driver Breakdown -->
+                <div class="card">
+                    <h3>Driver Performance</h3>
+                    <div id="driver-breakdown"></div>
+                </div>
+
+                <!-- Export Buttons -->
+                <div class="export-buttons">
+                    <button class="btn btn-secondary" onclick="exportToPDF()">📄 Export to PDF</button>
+                    <button class="btn btn-secondary" onclick="exportToCSV()">📊 Export to CSV</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="switchScreen('dashboard-screen', this)">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </button>
+            <button class="nav-item" onclick="switchScreen('drivers-screen', this)">
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">Drivers</span>
+            </button>
+            <button class="nav-item" onclick="switchScreen('daily-entries-screen', this)">
+                <span class="nav-icon">📝</span>
+                <span class="nav-label">Daily Entry</span>
+            </button>
+            <button class="nav-item" onclick="switchScreen('maintenance-screen', this)">
+                <span class="nav-icon">🔧</span>
+                <span class="nav-label">Maintenance</span>
+            </button>
+            <button class="nav-item" onclick="switchScreen('reports-screen', this)">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Reports</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Add Driver Dialog -->
+    <div id="add-driver-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Driver</h3>
+                <button class="close-btn" onclick="closeDialog('add-driver-dialog')">&times;</button>
+            </div>
+            <form id="add-driver-form" onsubmit="saveDriver(event)">
+                <div class="form-group">
+                    <label>Driver Name</label>
+                    <input type="text" id="driver-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Taxi Number</label>
+                    <input type="text" id="taxi-number" required>
+                </div>
+                <div class="form-group">
+                    <label>Total Kilometers</label>
+                    <input type="number" step="0.1" id="total-km" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Service KM</label>
+                    <input type="number" step="0.1" id="last-service-km" value="0" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeDialog('add-driver-dialog')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Driver Dialog -->
+    <div id="edit-driver-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Driver</h3>
+                <button class="close-btn" onclick="closeDialog('edit-driver-dialog')">&times;</button>
+            </div>
+            <form id="edit-driver-form" onsubmit="updateDriver(event)">
+                <input type="hidden" id="edit-driver-id">
+                <div class="form-group">
+                    <label>Driver Name</label>
+                    <input type="text" id="edit-driver-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Taxi Number</label>
+                    <input type="text" id="edit-taxi-number" required>
+                </div>
+                <div class="form-group">
+                    <label>Total Kilometers</label>
+                    <input type="number" step="0.1" id="edit-total-km" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Service KM</label>
+                    <input type="number" step="0.1" id="edit-last-service-km" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeDialog('edit-driver-dialog')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Maintenance Dialog -->
+    <div id="add-maintenance-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Maintenance</h3>
+                <button class="close-btn" onclick="closeDialog('add-maintenance-dialog')">&times;</button>
+            </div>
+            <form id="add-maintenance-form" onsubmit="saveMaintenance(event)">
+                <div class="form-group">
+                    <label>Taxi</label>
+                    <select id="maintenance-taxi" required>
+                        <option value="">Select Taxi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Maintenance Type</label>
+                    <select id="maintenance-type" required>
+                        <option value="Brake Pads">Brake Pads</option>
+                        <option value="Rear Wheel Liners">Rear Wheel Liners</option>
+                        <option value="Brake Fluid">Brake Fluid</option>
+                        <option value="Oil Change">Oil Change</option>
+                        <option value="Tire Replacement">Tire Replacement</option>
+                        <option value="Engine Service">Engine Service</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cost (R)</label>
+                    <input type="number" step="0.01" id="maintenance-cost" required>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="maintenance-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="maintenance-notes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeDialog('add-maintenance-dialog')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
