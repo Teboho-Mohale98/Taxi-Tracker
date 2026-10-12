@@ -1,6 +1,10 @@
 # Taxi Tracker Pro
 
-A comprehensive Flutter mobile application for managing taxi fleet operations, tracking driver earnings, expenses, and maintenance schedules.
+![Taxi Tracker Pro — taxi fleet management dashboard](screenshots/preview.png)
+
+A comprehensive application for managing taxi fleet operations, tracking driver earnings, expenses, and maintenance schedules.
+
+**Live site:** <https://teboho-mohale98.github.io/Taxi-Tracker/>
 
 ## Features
 
